@@ -8,7 +8,6 @@ public record SignupCommand(
         String username,
         String plainPassword,
         String name,
-        int age,
         LocalDate birthday,
         String email
 ) {
@@ -17,7 +16,6 @@ public record SignupCommand(
                 username,
                 Sha256.encrypt(plainPassword),
                 name,
-                age,
                 birthday,
                 email
         );

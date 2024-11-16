@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
+import java.time.Period;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,13 +26,19 @@ public class Member {
     private LocalDate birthday;
     private String email;
 
-    public Member(String username, String hashedPassword, String name, int age, LocalDate birthday, String email) {
+    public Member(String username, String hashedPassword, String name, LocalDate birthday, String email) {
         this.username = username;
         this.hashedPassword = hashedPassword;
         this.name = name;
-        this.age = age;
+        this.age = calculateAge(birthday);
         this.birthday = birthday;
         this.email = email;
+    }
+
+    private int calculateAge(LocalDate birthDate) {
+        LocalDate currentDate = LocalDate.now();
+        Period period = Period.between(birthDate, currentDate);
+        return period.getYears();
     }
 
     public void signup(MemberValidator validator) {
