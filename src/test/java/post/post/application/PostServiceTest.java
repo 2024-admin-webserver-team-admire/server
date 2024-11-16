@@ -1,19 +1,25 @@
 package post.post.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import post.common.exception.type.ForbiddenException;
 import post.member.domain.Member;
 import post.member.domain.MemberRepository;
+import post.post.application.command.PostUpdateCommand;
 import post.post.application.command.PostWriteCommand;
+import post.post.domain.Post;
+import post.post.domain.PostRepository;
 
 @Transactional
 @SpringBootTest
@@ -24,6 +30,9 @@ class PostServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private PostService postService;
@@ -42,5 +51,44 @@ class PostServiceTest {
 
         // then
         assertThat(postId).isNotNull();
+    }
+
+    @Nested
+    class 게시글_수정_시 {
+
+        private Long postId;
+
+        @BeforeEach
+        void setUp() {
+            memberRepository.save(member1);
+            memberRepository.save(member2);
+            PostWriteCommand postWriteCommand = new PostWriteCommand(member1, "제목", "내용");
+            postId = postService.write(postWriteCommand);
+        }
+
+        @Test
+        void 내_글이라면_수정_가능() {
+            // given
+            PostUpdateCommand command = new PostUpdateCommand(postId, member1, "ut", "uc");
+
+            // when
+            postService.update(command);
+
+            // then
+            Post post = postRepository.getById(postId);
+            assertThat(post.getTitle()).isEqualTo("ut");
+            assertThat(post.getContent()).isEqualTo("uc");
+        }
+
+        @Test
+        void 내_게시글이_아니면_수정_불가() {
+            // given
+            PostUpdateCommand command = new PostUpdateCommand(postId, member2, "ut", "uc");
+
+            // when & then
+            Assertions.assertThatThrownBy(() -> {
+                postService.update(command);
+            }).isInstanceOf(ForbiddenException.class);
+        }
     }
 }

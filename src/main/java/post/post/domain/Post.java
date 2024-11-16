@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import post.common.domain.RootEntity;
+import post.common.exception.type.ForbiddenException;
 import post.member.domain.Member;
 
 @Getter
@@ -36,5 +37,16 @@ public class Post extends RootEntity<Long> {
         this.title = title;
         this.content = content;
         this.writer = writer;
+    }
+
+    public void validateWriter(Member member) {
+        if (!writer.equals(member)) {
+            throw new ForbiddenException("해당 게시글에 대한 권한이 없습니다.");
+        }
+    }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 }

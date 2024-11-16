@@ -1,7 +1,9 @@
 package post.post.application;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import post.post.application.command.PostUpdateCommand;
 import post.post.application.command.PostWriteCommand;
 import post.post.domain.Post;
 import post.post.domain.PostRepository;
@@ -16,5 +18,12 @@ public class PostService {
         Post post = command.toPost();
         return postRepository.save(post)
                 .getId();
+    }
+
+    @Transactional
+    public void update(PostUpdateCommand command) {
+        Post post = postRepository.getById(command.postId());
+        post.validateWriter(command.member());
+        post.update(command.title(), command.content());
     }
 }
