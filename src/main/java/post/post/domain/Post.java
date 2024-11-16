@@ -49,4 +49,13 @@ public class Post extends RootEntity<Long> {
         this.title = title;
         this.content = content;
     }
+
+    public PostLike like(Member member) {
+        this.likeCount++;
+        return new PostLike(this, member);
+    }
+
+    public void dislike() {
+        this.likeCount--;
+    }
 }

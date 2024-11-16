@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import post.common.exception.type.ConflictException;
 import post.common.exception.type.ForbiddenException;
 import post.member.domain.Member;
 import post.member.domain.MemberRepository;
@@ -120,6 +121,57 @@ class PostServiceTest {
             Assertions.assertThatThrownBy(() -> {
                 postService.delete(member2, postId);
             }).isInstanceOf(ForbiddenException.class);
+        }
+    }
+
+    @Nested
+    class 좋아요_테스트 {
+
+        private Long postId;
+
+        @BeforeEach
+        void setUp() {
+            memberRepository.save(member1);
+            PostWriteCommand postWriteCommand = new PostWriteCommand(member1, "제목", "내용");
+            postId = postService.write(postWriteCommand);
+        }
+
+        @Test
+        void 좋아요() {
+            // when
+            postService.like(member1, postId);
+
+            // then
+            Post post = postRepository.getById(postId);
+            assertThat(post.getLikeCount()).isEqualTo(1);
+        }
+
+        @Test
+        void 중복_좋아요시_예외() {
+            // given
+            postService.like(member1, postId);
+
+            // when
+            Assertions.assertThatThrownBy(() -> {
+                postService.like(member1, postId);
+            }).isInstanceOf(ConflictException.class);
+
+            // then
+            Post post = postRepository.getById(postId);
+            assertThat(post.getLikeCount()).isEqualTo(1);
+        }
+
+        @Test
+        void 좋아요_취소() {
+            // given
+            postService.like(member1, postId);
+
+            // when
+            postService.dislike(member1, postId);
+
+            // then
+            Post post = postRepository.getById(postId);
+            assertThat(post.getLikeCount()).isEqualTo(0);
         }
     }
 }
