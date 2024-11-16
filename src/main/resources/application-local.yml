@@ -1,0 +1,26 @@
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: TRACE
+
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        highlight_sql: true
+
+    hibernate:
+      ddl-auto: create
+
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+swagger:
+  server-url: http://localhost:8080
+
+cors:
+  allowedOrigins: http://localhost:3000
