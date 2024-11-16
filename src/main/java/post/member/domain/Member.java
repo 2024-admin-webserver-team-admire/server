@@ -9,6 +9,8 @@ import java.time.Period;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import post.common.exception.type.UnAuthorizedException;
+import post.common.security.Sha256;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -43,5 +45,11 @@ public class Member {
 
     public void signup(MemberValidator validator) {
         validator.validateSignup(username);
+    }
+
+    public void login(String plainPassword) {
+        if (!this.hashedPassword.equals(Sha256.encrypt(plainPassword))) {
+            throw new UnAuthorizedException("비밀번호가 잘못되었습니다.");
+        }
     }
 }
