@@ -1,8 +1,10 @@
 package post.post.domain;
 
 import java.util.List;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import post.common.exception.type.NotFoundException;
+import post.member.domain.Member;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
@@ -13,4 +15,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     }
 
     List<Comment> findAllByPost(Post post);
+
+    @EntityGraph(attributePaths = {"post"})
+    List<Comment> findAllByWriter(Member member);
 }

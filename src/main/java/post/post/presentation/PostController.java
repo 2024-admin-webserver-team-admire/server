@@ -151,6 +151,34 @@ public class PostController {
         return ResponseEntity.ok(PageResponse.from(results));
     }
 
+    @SecurityRequirement(name = "JWT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200")
+    })
+    @Operation(summary = "내가 작성한 게시글 조회")
+    @GetMapping("/my/write")
+    public ResponseEntity<List<PostListQueryResponse>> findAllMyPost(@Auth Member member) {
+        List<PostListQueryResponse> results = postQueryService.findAllMyPost(member)
+                .stream()
+                .map(PostListQueryResponse::from)
+                .toList();
+        return ResponseEntity.ok(results);
+    }
+
+    @SecurityRequirement(name = "JWT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200")
+    })
+    @Operation(summary = "내가 좋아요한 게시글 조회")
+    @GetMapping("/my/like")
+    public ResponseEntity<List<PostListQueryResponse>> findAllLiked(@Auth Member member) {
+        List<PostListQueryResponse> results = postQueryService.findAllLiked(member)
+                .stream()
+                .map(PostListQueryResponse::from)
+                .toList();
+        return ResponseEntity.ok(results);
+    }
+
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(hidden = true))),
