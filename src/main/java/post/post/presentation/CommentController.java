@@ -32,6 +32,7 @@ import post.post.domain.Post;
 import post.post.presentation.request.CommentUpdateRequest;
 import post.post.presentation.request.CommentWriteRequest;
 import post.post.presentation.response.CommentListResponse;
+import post.post.presentation.response.MyPageCommentListResponse;
 
 @Tag(name = "댓글 API")
 @RequiredArgsConstructor
@@ -102,5 +103,19 @@ public class CommentController {
     ) {
         Pair<Post, List<Comment>> result = commentQueryService.findAllByPostId(postId);
         return ResponseEntity.ok(CommentListResponse.of(result.getFirst(), result.getSecond()));
+    }
+
+    @SecurityRequirement(name = "JWT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200")
+    })
+    @Operation(summary = "내가 작성한 댓글 조회")
+    @GetMapping("/my/write")
+    public ResponseEntity<List<MyPageCommentListResponse>> findAllMyComment(@Auth Member member) {
+        List<MyPageCommentListResponse> results = commentQueryService.findAllMyComment(member)
+                .stream()
+                .map(MyPageCommentListResponse::from)
+                .toList();
+        return ResponseEntity.ok(results);
     }
 }
