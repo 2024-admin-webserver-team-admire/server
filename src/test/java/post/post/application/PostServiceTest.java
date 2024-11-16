@@ -91,4 +91,35 @@ class PostServiceTest {
             }).isInstanceOf(ForbiddenException.class);
         }
     }
+
+    @Nested
+    class 포스트_제거_시 {
+
+        private Long postId;
+
+        @BeforeEach
+        void setUp() {
+            memberRepository.save(member1);
+            memberRepository.save(member2);
+            PostWriteCommand postWriteCommand = new PostWriteCommand(member1, "제목", "내용");
+            postId = postService.write(postWriteCommand);
+        }
+
+        @Test
+        void 내_글이라면_제거_가능() {
+            // when
+            postService.delete(member1, postId);
+
+            // then
+            assertThat(postRepository.existsById(postId)).isFalse();
+        }
+
+        @Test
+        void 내_게시글이_아니면_제거_불가() {
+            // when & then
+            Assertions.assertThatThrownBy(() -> {
+                postService.delete(member2, postId);
+            }).isInstanceOf(ForbiddenException.class);
+        }
+    }
 }

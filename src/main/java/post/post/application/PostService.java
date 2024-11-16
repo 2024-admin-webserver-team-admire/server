@@ -3,6 +3,7 @@ package post.post.application;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import post.member.domain.Member;
 import post.post.application.command.PostUpdateCommand;
 import post.post.application.command.PostWriteCommand;
 import post.post.domain.Post;
@@ -25,5 +26,11 @@ public class PostService {
         Post post = postRepository.getById(command.postId());
         post.validateWriter(command.member());
         post.update(command.title(), command.content());
+    }
+
+    public void delete(Member member, Long postId) {
+        Post post = postRepository.getById(postId);
+        post.validateWriter(member);
+        postRepository.delete(post);
     }
 }
