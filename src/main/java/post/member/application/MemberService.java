@@ -20,4 +20,10 @@ public class MemberService {
         return memberRepository.save(member)
                 .getId();
     }
+
+    public Long login(String username, String password) {
+        Member member = memberRepository.getByUsername(username);
+        member.login(password);
+        return member.getId();
+    }
 }
