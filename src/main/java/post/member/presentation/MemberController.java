@@ -59,7 +59,7 @@ public class MemberController {
             @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true))),
     })
     @Operation(summary = "로그인")
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<TokenResponse> signup(
             @Valid @RequestBody LoginRequest request
     ) {
@@ -67,5 +67,4 @@ public class MemberController {
         TokenResponse token = tokenService.createToken(memberId);
         return ResponseEntity.status(200).body(token);
     }
-
 }

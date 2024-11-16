@@ -23,8 +23,7 @@ import post.member.application.command.SignupCommand;
 @DisplayName("MemberService 은(는)")
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayNameGeneration(ReplaceUnderscores.class)
-class
-MemberServiceTest {
+class MemberServiceTest {
 
     @Autowired
     private MemberService memberService;
