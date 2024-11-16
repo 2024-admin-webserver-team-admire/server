@@ -32,6 +32,7 @@ public class Post extends RootEntity<Long> {
 
     private long likeCount;
     private long viewCount;
+    private long commentCount;
 
     public Post(String title, String content, Member writer) {
         this.title = title;
@@ -61,5 +62,14 @@ public class Post extends RootEntity<Long> {
 
     public void increaseViewCount() {
         this.viewCount++;
+    }
+
+    public Comment writeComment(Member member, String content) {
+        this.commentCount++;
+        return new Comment(this, member, content);
+    }
+
+    public void decreaseCommentCount() {
+        this.commentCount--;
     }
 }
