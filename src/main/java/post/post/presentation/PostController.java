@@ -126,4 +126,35 @@ public class PostController {
         PostSingleQueryResult post = postQueryService.getPost(postId);
         return ResponseEntity.ok(PostSingleQueryResponse.from(post));
     }
+
+    @SecurityRequirement(name = "JWT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "409", content = @Content(schema = @Schema(hidden = true))),
+    })
+    @Operation(summary = "게시글 좋아요")
+    @PostMapping("/{postId}/like")
+    public void like(
+            @Auth Member member,
+            @Parameter(in = PATH, required = true, description = "게시글 ID")
+            @PathVariable("postId") Long postId
+    ) {
+        postService.like(member, postId);
+    }
+
+    @SecurityRequirement(name = "JWT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(hidden = true))),
+    })
+    @Operation(summary = "게시글 좋아요 취소")
+    @DeleteMapping("/{postId}/dislike")
+    public void dislike(
+            @Auth Member member,
+            @Parameter(in = PATH, required = true, description = "게시글 ID")
+            @PathVariable("postId") Long postId
+    ) {
+        postService.dislike(member, postId);
+    }
 }
