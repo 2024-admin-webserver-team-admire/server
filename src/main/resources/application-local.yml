@@ -24,3 +24,9 @@ swagger:
 
 cors:
   allowedOrigins: http://localhost:3000
+
+
+token:
+  secretKey: "dsakljqd1idj8qwjddj12idjdsakljqd1idj8qwjddj1dwqjkfhjkddwskljqd1idj8qwjddj12idjdsakljqd1idj8qwjddj12idjdsakljqd1idj8qwjddj12idj"
+  accessTokenExpirationMillis: 2000000
+  refreshTokenExpirationMillis: 100000000000
