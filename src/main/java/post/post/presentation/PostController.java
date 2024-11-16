@@ -36,7 +36,7 @@ import post.post.application.PostQueryService;
 import post.post.application.PostService;
 import post.post.application.command.PostUpdateCommand;
 import post.post.application.command.PostWriteCommand;
-import post.post.application.result.PostSingleQueryResult;
+import post.post.domain.Post;
 import post.post.presentation.request.PostUpdateRequest;
 import post.post.presentation.request.PostWriteRequest;
 import post.post.presentation.response.PostListQueryResponse;
@@ -163,7 +163,7 @@ public class PostController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        PostSingleQueryResult post = postQueryService.getPost(postId);
+        Post post = postQueryService.getPost(postId);
         List<String> viewedPosts = getViewPosts(request);
         if (firstView(postId, viewedPosts)) {
             postService.increaseViewCount(postId);
