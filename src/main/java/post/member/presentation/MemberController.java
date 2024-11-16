@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import post.member.application.MemberService;
 import post.member.presentation.request.LoginRequest;
 import post.member.presentation.request.SignupRequest;
 
+@Tag(name = "회원 API")
 @RequiredArgsConstructor
 @RequestMapping("/members")
 @RestController
@@ -59,7 +61,7 @@ public class MemberController {
             @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true))),
     })
     @Operation(summary = "로그인")
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<TokenResponse> signup(
             @Valid @RequestBody LoginRequest request
     ) {
@@ -67,5 +69,4 @@ public class MemberController {
         TokenResponse token = tokenService.createToken(memberId);
         return ResponseEntity.status(200).body(token);
     }
-
 }
