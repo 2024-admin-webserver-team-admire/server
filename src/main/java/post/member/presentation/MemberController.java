@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import post.auth.token.TokenResponse;
+import post.auth.token.TokenService;
 import post.member.application.MemberQueryService;
 import post.member.application.MemberService;
+import post.member.presentation.request.LoginRequest;
 import post.member.presentation.request.SignupRequest;
 
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final MemberQueryService memberQueryService;
+    private final TokenService tokenService;
 
     @ApiResponses(value = {
             @ApiResponse(description = "아이디가 중복되었다면 true, 중복되지 않았다면 false", responseCode = "200"),
@@ -42,10 +46,26 @@ public class MemberController {
     })
     @Operation(summary = "회원가입")
     @PostMapping
-    public ResponseEntity<Long> signup(
+    public ResponseEntity<TokenResponse> signup(
             @Valid @RequestBody SignupRequest request
     ) {
         Long memberId = memberService.signup(request.toCommand());
-        return ResponseEntity.status(201).body(memberId);
+        TokenResponse token = tokenService.createToken(memberId);
+        return ResponseEntity.status(201).body(token);
     }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true))),
+    })
+    @Operation(summary = "로그인")
+    @PostMapping
+    public ResponseEntity<TokenResponse> signup(
+            @Valid @RequestBody LoginRequest request
+    ) {
+        Long memberId = memberService.login(request.username(), request.password());
+        TokenResponse token = tokenService.createToken(memberId);
+        return ResponseEntity.status(200).body(token);
+    }
+
 }
