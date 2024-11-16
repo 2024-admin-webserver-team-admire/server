@@ -55,4 +55,10 @@ public class PostService {
         post.dislike();
         postLikeRepository.delete(postLike);
     }
+
+    @Transactional
+    public void increaseViewCount(Long postId) {
+        Post post = postRepository.getByIdWithLock(postId);
+        post.increaseViewCount();
+    }
 }
