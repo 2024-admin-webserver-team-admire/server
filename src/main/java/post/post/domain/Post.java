@@ -58,4 +58,8 @@ public class Post extends RootEntity<Long> {
     public void dislike() {
         this.likeCount--;
     }
+
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
 }
