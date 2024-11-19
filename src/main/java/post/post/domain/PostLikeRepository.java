@@ -15,4 +15,6 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
         return findByMemberAndPost(member, post)
                 .orElseThrow(() -> new NotFoundException("좋아요를 누르지 않았습니다."));
     }
+
+    void deleteByPost(Post post);
 }

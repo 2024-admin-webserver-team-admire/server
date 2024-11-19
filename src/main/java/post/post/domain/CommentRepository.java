@@ -18,4 +18,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @EntityGraph(attributePaths = {"post"})
     List<Comment> findAllByWriter(Member member);
+
+    void deleteByPost(Post post);
 }

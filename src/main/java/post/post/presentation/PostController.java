@@ -17,8 +17,10 @@ import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,13 +44,14 @@ import post.post.presentation.request.PostWriteRequest;
 import post.post.presentation.response.PostListQueryResponse;
 import post.post.presentation.response.PostSingleQueryResponse;
 
+@Slf4j
 @Tag(name = "게시글 API")
 @RequiredArgsConstructor
 @RequestMapping("/posts")
 @RestController
 public class PostController {
 
-    private static final String VIEW_POST_COOKIE_NAME = "viewedPosts";
+    private static final String VIEW_POST_HEADER_NAME = "viewedPosts";
 
     private final PostService postService;
     private final PostQueryService postQueryService;
@@ -193,25 +196,23 @@ public class PostController {
     ) {
         Post post = postQueryService.getPost(postId);
         List<String> viewedPosts = getViewPosts(request);
+        log.info("postId: {}, viewedPosts: {}, firstView: {}",
+                postId, viewedPosts, firstView(postId, viewedPosts));
         if (firstView(postId, viewedPosts)) {
             postService.increaseViewCount(postId);
             viewedPosts.add(postId.toString());
+            log.info("add view post cookies");
             addViewPosts(viewedPosts, response);
         }
         return ResponseEntity.ok(PostSingleQueryResponse.from(post));
     }
 
     private List<String> getViewPosts(HttpServletRequest request) {
-        List<String> viewedPosts = new ArrayList<>();
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals(VIEW_POST_COOKIE_NAME)) {
-                    String value = cookie.getValue();
-                    viewedPosts.addAll(List.of(value.split(",")));
-                }
-            }
+        String header = request.getHeader(VIEW_POST_HEADER_NAME);
+        if (header == null || header.isBlank()) {
+            return new ArrayList<>();
         }
-        return viewedPosts;
+        return new ArrayList<>(List.of(header.split("_")));
     }
 
     private boolean firstView(Long postId, List<String> viewedPosts) {
@@ -220,12 +221,8 @@ public class PostController {
     }
 
     private void addViewPosts(List<String> viewedPosts, HttpServletResponse response) {
-        String updated = String.join(",", viewedPosts);
-        Cookie newCookie = new Cookie(VIEW_POST_COOKIE_NAME, updated);
-        newCookie.setMaxAge(-1); // 세션 동안 유지
-        newCookie.setHttpOnly(false);
-        newCookie.setSecure(false);
-        newCookie.setPath("/");
-        response.addCookie(newCookie);
+        String updated = String.join("_", viewedPosts);
+        log.info("updated view posts: {}", updated);
+        response.addHeader(VIEW_POST_HEADER_NAME, updated);
     }
 }

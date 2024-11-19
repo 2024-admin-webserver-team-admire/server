@@ -35,7 +35,7 @@ public class TokenService {
         return Jwts.builder()
                 .claim(MEMBER_ID_CLAIM, memberId)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationMillis))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationMillis * 24L * 60 * 60 * 1000))
                 .signWith(secretKey, SIG.HS512)
                 .compact();
     }

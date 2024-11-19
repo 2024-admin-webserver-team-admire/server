@@ -7,6 +7,7 @@ import post.common.exception.type.ConflictException;
 import post.member.domain.Member;
 import post.post.application.command.PostUpdateCommand;
 import post.post.application.command.PostWriteCommand;
+import post.post.domain.CommentRepository;
 import post.post.domain.Post;
 import post.post.domain.PostLike;
 import post.post.domain.PostLikeRepository;
@@ -18,6 +19,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
 
     public Long write(PostWriteCommand command) {
         Post post = command.toPost();
@@ -35,6 +37,8 @@ public class PostService {
     public void delete(Member member, Long postId) {
         Post post = postRepository.getById(postId);
         post.validateWriter(member);
+        commentRepository.deleteByPost(post);
+        postLikeRepository.deleteByPost(post);
         postRepository.delete(post);
     }
 
