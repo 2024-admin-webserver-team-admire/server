@@ -7,6 +7,6 @@ public record MemberResponse(
         String name
 ) {
     public static MemberResponse from(Member member) {
-        return new MemberResponse(member.getId(), member.getUsername());
+        return new MemberResponse(member.getId(), member.getName());
     }
 }
