@@ -51,7 +51,7 @@ import post.post.presentation.response.PostSingleQueryResponse;
 @RestController
 public class PostController {
 
-    private static final String VIEW_POST_HEADER_NAME = "viewedPosts";
+    public static final String VIEW_POST_HEADER_NAME = "viewedPosts";
 
     private final PostService postService;
     private final PostQueryService postQueryService;
@@ -209,6 +209,7 @@ public class PostController {
 
     private List<String> getViewPosts(HttpServletRequest request) {
         String header = request.getHeader(VIEW_POST_HEADER_NAME);
+        System.out.println(header);
         if (header == null || header.isBlank()) {
             return new ArrayList<>();
         }

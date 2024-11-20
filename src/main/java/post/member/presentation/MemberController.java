@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +16,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import post.auth.Auth;
 import post.auth.token.TokenResponse;
 import post.auth.token.TokenService;
 import post.member.application.MemberQueryService;
 import post.member.application.MemberService;
+import post.member.domain.Member;
 import post.member.presentation.request.LoginRequest;
 import post.member.presentation.request.SignupRequest;
+import post.member.presentation.response.MemberResponse;
 
 @Tag(name = "회원 API")
 @RequiredArgsConstructor
@@ -68,5 +72,18 @@ public class MemberController {
         Long memberId = memberService.login(request.username(), request.password());
         TokenResponse token = tokenService.createToken(memberId);
         return ResponseEntity.status(200).body(token);
+    }
+
+    @SecurityRequirement(name = "JWT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true))),
+    })
+    @Operation(summary = "내 정보 조회")
+    @PostMapping("/me")
+    public ResponseEntity<MemberResponse> getMyInfo(
+            @Auth Member member
+    ) {
+        return ResponseEntity.status(200).body(MemberResponse.from(member));
     }
 }
