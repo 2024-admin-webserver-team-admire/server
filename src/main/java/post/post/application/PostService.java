@@ -34,6 +34,7 @@ public class PostService {
         post.update(command.title(), command.content());
     }
 
+    @Transactional
     public void delete(Member member, Long postId) {
         Post post = postRepository.getById(postId);
         post.validateWriter(member);
